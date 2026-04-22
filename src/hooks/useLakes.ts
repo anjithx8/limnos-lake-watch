@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { FeatureCollection } from "geojson";
-import { fetchLakes } from "@/services/mockApi";
+import { fetchLakes } from "@/services/api";
 
 export function useLakes() {
   const [lakesData, setLakesData] = useState<FeatureCollection | null>(null);
