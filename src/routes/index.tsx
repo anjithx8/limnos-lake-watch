@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, lazy, Suspense } from "react";
 import type { Feature } from "geojson";
-import maplibregl from "maplibre-gl";
+import type maplibregl from "maplibre-gl";
 import { Loader2, AlertCircle } from "lucide-react";
 import { useLakes } from "@/hooks/useLakes";
 import { useAnalysis } from "@/hooks/useAnalysis";
-import { LakeMap } from "@/components/LakeMap";
+const LakeMap = lazy(() => import("@/components/LakeMap").then((m) => ({ default: m.LakeMap })));
 import { HeaderCard } from "@/components/HeaderCard";
 import { LakeSearch } from "@/components/LakeSearch";
 import { AnalysisPanel } from "@/components/AnalysisPanel";
@@ -19,6 +19,8 @@ function Index() {
   const { analysisResult, isAnalysing, error: analysisError, startAnalysis, reset } = useAnalysis();
 
   const [selectedLakeId, setSelectedLakeId] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const mapRef = useRef<maplibregl.Map | null>(null);
 
   const selectedLake = useMemo<Feature | null>(() => {
@@ -48,12 +50,16 @@ function Index() {
       className="relative w-screen h-screen overflow-hidden bg-white text-slate-800"
       style={{ fontFamily: '"DM Sans", system-ui, sans-serif' }}
     >
-      <LakeMap
-        lakesData={lakesData}
-        selectedLakeId={selectedLakeId}
-        onLakeClick={handleLakeSelect}
-        mapRef={mapRef}
-      />
+      {mounted && (
+        <Suspense fallback={<div className="absolute inset-0 bg-slate-50" />}>
+          <LakeMap
+            lakesData={lakesData}
+            selectedLakeId={selectedLakeId}
+            onLakeClick={handleLakeSelect}
+            mapRef={mapRef}
+          />
+        </Suspense>
+      )}
 
       <HeaderCard lakeCount={lakesData?.features.length ?? 0} />
       <LakeSearch lakesData={lakesData} onLakeSelect={handleLakeSelect} />
