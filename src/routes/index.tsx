@@ -1,26 +1,97 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useCallback, useMemo, useRef, useState } from "react";
+import type { Feature } from "geojson";
+import maplibregl from "maplibre-gl";
+import { Loader2, AlertCircle } from "lucide-react";
+import { useLakes } from "@/hooks/useLakes";
+import { useAnalysis } from "@/hooks/useAnalysis";
+import { LakeMap } from "@/components/LakeMap";
+import { HeaderCard } from "@/components/HeaderCard";
+import { LakeSearch } from "@/components/LakeSearch";
+import { AnalysisPanel } from "@/components/AnalysisPanel";
 
 export const Route = createFileRoute("/")({
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
+function Index() {
+  const { lakesData, loading, error, retry } = useLakes();
+  const { analysisResult, isAnalysing, error: analysisError, startAnalysis, reset } = useAnalysis();
+
+  const [selectedLakeId, setSelectedLakeId] = useState<string | null>(null);
+  const mapRef = useRef<maplibregl.Map | null>(null);
+
+  const selectedLake = useMemo<Feature | null>(() => {
+    if (!lakesData || !selectedLakeId) return null;
+    return (
+      (lakesData.features.find(
+        (f) => (f.properties as { lake_id?: string } | null)?.lake_id === selectedLakeId,
+      ) as Feature | undefined) ?? null
+    );
+  }, [lakesData, selectedLakeId]);
+
+  const handleLakeSelect = useCallback(
+    (lakeId: string) => {
+      reset();
+      setSelectedLakeId(lakeId);
+    },
+    [reset],
+  );
+
+  const handlePanelClose = useCallback(() => {
+    setSelectedLakeId(null);
+    reset();
+  }, [reset]);
+
   return (
     <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
+      className="relative w-screen h-screen overflow-hidden bg-white text-slate-800"
+      style={{ fontFamily: '"DM Sans", system-ui, sans-serif' }}
     >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
+      <LakeMap
+        lakesData={lakesData}
+        selectedLakeId={selectedLakeId}
+        onLakeClick={handleLakeSelect}
+        mapRef={mapRef}
       />
+
+      <HeaderCard lakeCount={lakesData?.features.length ?? 0} />
+      <LakeSearch lakesData={lakesData} onLakeSelect={handleLakeSelect} />
+
+      <AnalysisPanel
+        lake={selectedLake}
+        onClose={handlePanelClose}
+        analysisResult={analysisResult}
+        isAnalysing={isAnalysing}
+        error={analysisError}
+        onAnalyse={startAnalysis}
+        onReset={reset}
+      />
+
+      {loading && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm pointer-events-none">
+          <div className="flex flex-col items-center gap-2 rounded-2xl bg-white shadow-md border border-slate-100 px-6 py-4 pointer-events-auto">
+            <Loader2 className="animate-spin text-sky-500" size={24} />
+            <div className="text-sm text-slate-600">Loading Bangalore lakes...</div>
+          </div>
+        </div>
+      )}
+
+      {error && !loading && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-3 rounded-2xl bg-white shadow-md border border-slate-100 px-6 py-5 max-w-sm text-center">
+            <AlertCircle className="text-red-500" size={28} />
+            <div className="text-sm text-slate-700">{error}</div>
+            <button
+              type="button"
+              onClick={retry}
+              className="rounded-lg bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium px-4 py-2"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
-}
-
-function Index() {
-  return <PlaceholderIndex />;
 }
