@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { AnalysisRequest, AnalysisResult } from "@/types";
-import { fetchResults, triggerAnalysis } from "@/services/mockApi";
+import { fetchResults, triggerAnalysis } from "@/services/api";
 
 export function useAnalysis() {
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
