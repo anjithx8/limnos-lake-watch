@@ -78,10 +78,10 @@ export function AnalysisPanel({
 
   return (
     <div
-      className={`fixed z-20 bg-white shadow-2xl overflow-y-auto transition-transform duration-300 ease-out
+      className={`fixed z-20 overflow-y-auto transition-transform duration-300 ease-out
         sm:top-0 sm:right-0 sm:h-full sm:w-[420px] sm:rounded-none
         bottom-0 left-0 right-0 h-[55vh] rounded-t-2xl sm:rounded-t-none
-        ${open ? "translate-y-0 sm:translate-x-0" : "translate-y-full sm:translate-y-0 sm:translate-x-full"}`}
+        ${open ? "translate-y-0 sm:translate-x-0 bg-white shadow-2xl pointer-events-auto" : "translate-y-full sm:translate-y-0 sm:translate-x-full bg-transparent shadow-none pointer-events-none"}`}
       aria-hidden={!open}
     >
       {lake && (
