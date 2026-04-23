@@ -226,21 +226,31 @@ export function LakeMap({ lakesData, selectedLakeId, onLakeClick, mapRef }: Lake
   return (
     <>
       <div ref={containerRef} className="absolute inset-0" />
-      <div className="absolute top-4 right-4 z-30 rounded-full bg-white/90 backdrop-blur-sm shadow-md border border-slate-100 p-1 flex">
-        {(Object.keys(BASEMAPS) as BasemapKey[]).map((k) => (
-          <button
-            key={k}
-            type="button"
-            onClick={() => setBasemap(k)}
-            className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
-              basemap === k
-                ? "bg-sky-500 text-white"
-                : "text-slate-600 hover:bg-slate-100"
-            }`}
-          >
-            {BASEMAPS[k].label}
-          </button>
-        ))}
+      <div className="absolute top-4 right-4 z-30 flex flex-col items-end gap-1">
+        <div className="rounded-full bg-white/90 backdrop-blur-sm shadow-md border border-slate-100 p-1 flex">
+          {(Object.keys(BASEMAPS) as BasemapKey[]).map((k) => (
+            <button
+              key={k}
+              type="button"
+              onClick={() => setBasemap(k)}
+              title={
+                k === "streets"
+                  ? "Standard street map view"
+                  : "Minimal light map view"
+              }
+              className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
+                basemap === k
+                  ? "bg-sky-500 text-white"
+                  : "text-slate-600 hover:bg-slate-100"
+              }`}
+            >
+              {BASEMAPS[k].label}
+            </button>
+          ))}
+        </div>
+        <span className="text-[10px] text-slate-500 bg-white/70 backdrop-blur-sm rounded px-1.5 py-0.5">
+          Map style
+        </span>
       </div>
     </>
   );
