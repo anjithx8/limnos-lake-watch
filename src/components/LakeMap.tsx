@@ -17,8 +17,8 @@ const BASEMAPS = {
   },
   light: {
     label: "Light",
-    tiles: ["https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}.png"],
-    attribution: "© Stadia Maps © OpenStreetMap contributors",
+    tiles: ["https://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"],
+    attribution: "© OpenStreetMap contributors, Humanitarian OSM Team",
   },
 } as const;
 
@@ -71,21 +71,28 @@ export function LakeMap({ lakesData, selectedLakeId, onLakeClick, mapRef }: Lake
   const onLakeClickRef = useRef(onLakeClick);
   onLakeClickRef.current = onLakeClick;
 
-  // Init map once
+  // Init map once (delayed to ensure DOM is ready)
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
-    const map = new maplibregl.Map({
-      container: containerRef.current,
-      style: buildStyle("streets"),
-      center: [77.5946, 12.9716],
-      zoom: 11,
-    });
-    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
-    map.on("load", () => setStyleReady((n) => n + 1));
-    mapRef.current = map;
+    let map: maplibregl.Map | null = null;
+    const timer = setTimeout(() => {
+      if (!containerRef.current || mapRef.current) return;
+      map = new maplibregl.Map({
+        container: containerRef.current,
+        style: buildStyle("streets"),
+        center: [77.5946, 12.9716],
+        zoom: 11,
+      });
+      map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
+      map.once("load", () => setStyleReady((n) => n + 1));
+      mapRef.current = map;
+    }, 100);
     return () => {
-      map.remove();
-      mapRef.current = null;
+      clearTimeout(timer);
+      if (map) {
+        map.remove();
+        mapRef.current = null;
+      }
     };
   }, [mapRef]);
 
