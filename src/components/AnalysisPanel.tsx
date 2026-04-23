@@ -133,7 +133,9 @@ export function AnalysisPanel({
             >
               {isAnalysing && <Loader2 size={16} className="animate-spin" />}
               {isAnalysing ? "Analysing..." : "Analyse"}
+            </button>
           </div>
+        </div>
         </div>
       )}
     </div>
