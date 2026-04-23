@@ -89,13 +89,24 @@ export function LakeMap({ lakesData, selectedLakeId, onLakeClick, mapRef }: Lake
     };
   }, [mapRef]);
 
-  // Switch basemap
+  // Switch basemap (skip first run since init already uses the default)
+  const isFirstBasemap = useRef(true);
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-    map.setStyle(buildStyle(basemap));
-    const onStyle = () => setStyleReady((n) => n + 1);
-    map.once("styledata", onStyle);
+    if (isFirstBasemap.current) {
+      isFirstBasemap.current = false;
+      return;
+    }
+    const apply = () => {
+      map.setStyle(buildStyle(basemap));
+      map.once("styledata", () => setStyleReady((n) => n + 1));
+    };
+    if (map.isStyleLoaded()) {
+      apply();
+    } else {
+      map.once("idle", apply);
+    }
   }, [basemap, mapRef]);
 
   // Add lake layers when data + style ready
