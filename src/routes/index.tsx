@@ -47,19 +47,24 @@ function Index() {
 
   return (
     <div
-      className="relative w-screen h-screen overflow-hidden bg-white text-slate-800"
+      className="relative w-screen h-screen overflow-hidden bg-slate-100 text-slate-800"
       style={{ fontFamily: '"DM Sans", system-ui, sans-serif' }}
     >
-      {mounted && (
-        <Suspense fallback={<div className="absolute inset-0 bg-slate-50" />}>
-          <LakeMap
-            lakesData={lakesData}
-            selectedLakeId={selectedLakeId}
-            onLakeClick={handleLakeSelect}
-            mapRef={mapRef}
-          />
-        </Suspense>
-      )}
+      {/* Centered map container, below search bar */}
+      <div className="absolute inset-0 flex justify-center pt-40 pb-6 px-6 sm:pr-[440px]">
+        <div className="relative w-full max-w-5xl rounded-2xl overflow-hidden shadow-lg border border-slate-200 bg-white">
+          {mounted && (
+            <Suspense fallback={<div className="absolute inset-0 bg-slate-50" />}>
+              <LakeMap
+                lakesData={lakesData}
+                selectedLakeId={selectedLakeId}
+                onLakeClick={handleLakeSelect}
+                mapRef={mapRef}
+              />
+            </Suspense>
+          )}
+        </div>
+      </div>
 
       <HeaderCard lakeCount={lakesData?.features.length ?? 0} />
       <LakeSearch lakesData={lakesData} onLakeSelect={handleLakeSelect} />
