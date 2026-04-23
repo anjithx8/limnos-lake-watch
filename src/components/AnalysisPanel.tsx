@@ -136,7 +136,6 @@ export function AnalysisPanel({
             </button>
           </div>
         </div>
-        </div>
       )}
     </div>
   );
