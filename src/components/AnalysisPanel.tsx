@@ -1,36 +1,23 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Feature } from "geojson";
-import { X, Loader2, AlertCircle, Inbox } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
 import { format, subDays, differenceInDays, parseISO } from "date-fns";
-import type { AnalysisRequest, AnalysisResult } from "@/types";
-import { ResultCard } from "./ResultCard";
-import { PipelineChip } from "./PipelineChip";
+import type { AnalysisRequest } from "@/types";
 
 interface AnalysisPanelProps {
   lake: Feature | null;
   onClose: () => void;
-  analysisResult: AnalysisResult | null;
   isAnalysing: boolean;
-  error: string | null;
   onAnalyse: (request: AnalysisRequest) => void;
-  onReset: () => void;
 }
 
 const numberFormatter = new Intl.NumberFormat("en-IN");
 
-function fmtArea(sqm: number | null) {
-  if (sqm === null) return "—";
-  return `${numberFormatter.format(Math.round(sqm))} m²`;
-}
-
 export function AnalysisPanel({
   lake,
   onClose,
-  analysisResult,
   isAnalysing,
-  error,
   onAnalyse,
-  onReset,
 }: AnalysisPanelProps) {
   const today = useMemo(() => format(new Date(), "yyyy-MM-dd"), []);
   const defaultStart = useMemo(() => format(subDays(new Date(), 30), "yyyy-MM-dd"), []);
