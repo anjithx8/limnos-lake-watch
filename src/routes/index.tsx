@@ -10,13 +10,20 @@ import { HeaderCard } from "@/components/HeaderCard";
 import { LakeSearch } from "@/components/LakeSearch";
 import { AnalysisPanel } from "@/components/AnalysisPanel";
 import { AnalysisResults } from "@/components/AnalysisResults";
+import { CitySwitcher, type City } from "@/components/CitySwitcher";
+
+const CITY_CENTERS: Record<City, { center: [number, number]; zoom: number }> = {
+  bangalore: { center: [77.5946, 12.9716], zoom: 11 },
+  chintamani: { center: [78.0517, 13.4005], zoom: 13 },
+};
 
 export const Route = createFileRoute("/")({
   component: Index,
 });
 
 function Index() {
-  const { lakesData, loading, error, retry } = useLakes();
+  const [city, setCity] = useState<City>("bangalore");
+  const { lakesData, loading, error, retry } = useLakes(city);
   const { analysisResult, isAnalysing, error: analysisError, startAnalysis, reset } = useAnalysis();
 
   const [selectedLakeId, setSelectedLakeId] = useState<string | null>(null);

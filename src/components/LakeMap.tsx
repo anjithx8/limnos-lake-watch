@@ -117,6 +117,13 @@ export function LakeMap({ lakesData, selectedLakeId, onLakeClick, mapRef, cityCe
     }
   }, [basemap, mapRef]);
 
+  // Fly to city center when it changes
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !cityCenter) return;
+    map.flyTo({ center: cityCenter.center, zoom: cityCenter.zoom, duration: 1200 });
+  }, [cityCenter, mapRef]);
+
   // Add lake layers when data + style ready
   useEffect(() => {
     const map = mapRef.current;
