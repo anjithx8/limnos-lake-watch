@@ -4,8 +4,11 @@ import type { AnalysisRequest, AnalysisResult } from "@/types";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
 
-export async function fetchLakes(): Promise<FeatureCollection> {
-  const res = await fetch(`${BASE_URL}/api/lakes`);
+export async function fetchLakes(city?: string): Promise<FeatureCollection> {
+  const url = city
+    ? `${BASE_URL}/api/lakes?city=${encodeURIComponent(city)}`
+    : `${BASE_URL}/api/lakes`;
+  const res = await fetch(url);
   if (!res.ok) throw new Error(`Failed to fetch lakes: ${res.statusText}`);
   return res.json();
 }
