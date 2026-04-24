@@ -112,7 +112,8 @@ function Index() {
       </div>
 
       {!panelOpen && <HeaderCard lakeCount={lakesData?.features.length ?? 0} />}
-      <LakeSearch lakesData={lakesData} onLakeSelect={handleLakeSelect} />
+      <CitySwitcher city={city} onChange={handleCityChange} />
+      <LakeSearch key={city} lakesData={lakesData} onLakeSelect={handleLakeSelect} />
 
       <AnalysisPanel
         lake={selectedLake}
