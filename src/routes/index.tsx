@@ -6,9 +6,9 @@ import { Loader2, AlertCircle } from "lucide-react";
 import { useLakes } from "@/hooks/useLakes";
 import { useAnalysis } from "@/hooks/useAnalysis";
 const LakeMap = lazy(() => import("@/components/LakeMap").then((m) => ({ default: m.LakeMap })));
-import { HeaderCard } from "@/components/HeaderCard";
 import { LakeSearch } from "@/components/LakeSearch";
 import { AnalysisPanel } from "@/components/AnalysisPanel";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { AnalysisResults } from "@/components/AnalysisResults";
 import { CitySwitcher, type City } from "@/components/CitySwitcher";
 
@@ -71,18 +71,32 @@ function Index() {
   const panelOpen = selectedLake !== null;
 
   return (
-    <div
-      className="relative min-h-screen w-screen overflow-x-hidden bg-slate-100 text-slate-800"
-      style={{ fontFamily: '"DM Sans", system-ui, sans-serif' }}
-    >
-      {/* Map area: shifted right when panel is open on desktop */}
+    <>
+      <img
+        src="/lake-background.png"
+        alt=""
+        className="fixed inset-0 z-0 w-full h-full object-cover"
+        style={{
+          filter: 'brightness(0.7) contrast(1.1)',
+        }}
+      />
       <div
-        className={`pt-32 pb-6 px-6 transition-all duration-300 ${
-          panelOpen ? "sm:pl-[440px] sm:pr-6" : "sm:px-6"
-        }`}
+        className="fixed inset-0 z-0 w-full h-full bg-gradient-to-b from-blue-900/30 via-blue-800/40 to-slate-900/50"
+      />
+      <div
+        className="relative min-h-screen w-screen overflow-x-hidden text-foreground z-10"
+        style={{
+          fontFamily: 'var(--font-body)',
+        }}
       >
-        <div className="mx-auto w-full max-w-5xl">
-          <div className="relative w-full h-[60vh] min-h-[400px] rounded-2xl overflow-hidden shadow-lg border border-slate-200 bg-white">
+        {/* Map area: shifted right when panel is open on desktop */}
+        <div
+          className={`pt-[19rem] pb-6 px-6 transition-all duration-300 ${
+            panelOpen ? "sm:pl-[440px] sm:pr-6" : "sm:px-6"
+          }`}
+        >
+          <div className="mx-auto w-full max-w-5xl">
+            <div className="relative w-full h-[60vh] min-h-[400px] rounded-2xl overflow-hidden shadow-lg border border-border bg-card">
             {mounted && (
               <Suspense fallback={<div className="absolute inset-0 bg-slate-50" />}>
                 <LakeMap
@@ -111,9 +125,25 @@ function Index() {
         </div>
       </div>
 
-      {!panelOpen && <HeaderCard lakeCount={lakesData?.features.length ?? 0} />}
-      <CitySwitcher city={city} onChange={handleCityChange} />
-      <LakeSearch key={city} lakesData={lakesData} onLakeSelect={handleLakeSelect} />
+        {!panelOpen && (
+          <div className="absolute left-1/2 -translate-x-1/2 top-10 z-30 text-center px-4">
+            <h1
+              className="text-5xl sm:text-6xl md:text-7xl font-black text-white leading-tight drop-shadow-[0_10px_30px_rgba(0,0,0,0.45)]"
+              style={{ fontFamily: 'var(--font-heading)' }}
+            >
+              Limnos
+            </h1>
+            <h2 className="mx-auto mt-4 max-w-3xl text-xl sm:text-2xl md:text-3xl font-bold text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]">
+              Track Lake Health Across Bangalore
+            </h2>
+            <p className="mx-auto mt-3 max-w-2xl text-base sm:text-lg text-slate-100/95 font-medium drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">
+              Real-time insights on water levels, vegetation, and quality
+            </p>
+          </div>
+        )}
+        <ThemeToggle />
+        <CitySwitcher city={city} onChange={handleCityChange} />
+        <LakeSearch key={city} lakesData={lakesData} onLakeSelect={handleLakeSelect} />
 
       <AnalysisPanel
         lake={selectedLake}
@@ -126,7 +156,7 @@ function Index() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm pointer-events-none">
           <div className="flex flex-col items-center gap-2 rounded-2xl bg-white shadow-md border border-slate-100 px-6 py-4 pointer-events-auto">
             <Loader2 className="animate-spin text-sky-500" size={24} />
-            <div className="text-sm text-slate-600">Loading Bangalore lakes...</div>
+            <div className="text-sm text-slate-600">Loading lakes...</div>
           </div>
         </div>
       )}
@@ -147,5 +177,6 @@ function Index() {
         </div>
       )}
     </div>
+    </>
   );
 }

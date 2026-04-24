@@ -106,9 +106,9 @@ export function LakeSearch({ lakesData, onLakeSelect }: LakeSearchProps) {
   }
 
   return (
-    <div ref={containerRef} className="absolute left-1/2 -translate-x-1/2 top-20 z-30 w-[380px] max-w-[calc(100%-2rem)]">
+    <div ref={containerRef} className="absolute left-1/2 -translate-x-1/2 top-60 z-40 w-[380px] max-w-[calc(100%-2rem)]">
       <div className="relative">
-        <Search className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} aria-hidden="true" />
+        <Search className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} aria-hidden="true" />
         <input
           ref={inputRef}
           type="text"
@@ -122,16 +122,16 @@ export function LakeSearch({ lakesData, onLakeSelect }: LakeSearchProps) {
           }}
           onKeyDown={handleKeyDown}
           placeholder="Search lakes by name..."
-          className="h-11 w-full rounded-full bg-white shadow-md border border-slate-200 pl-11 pr-10 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-400"
+          className="h-11 w-full rounded-full bg-background shadow-md border border-border pl-11 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/40 focus:border-ring"
         />
         {query.length > 0 && (
-          <button type="button" onClick={clearQuery} className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full hover:bg-slate-100 p-1 text-slate-500">
+          <button type="button" onClick={clearQuery} className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full hover:bg-muted p-1 text-muted-foreground">
             <X size={16} />
           </button>
         )}
       </div>
       {open && query.length >= 1 && (
-        <div className="mt-2 w-full rounded-2xl bg-white shadow-lg border border-slate-200 overflow-hidden">
+        <div className="mt-2 w-full rounded-2xl bg-popover shadow-lg border border-border overflow-hidden">
           {results.length > 0 ? (
             <ul id="lake-search-listbox" role="listbox" className="max-h-[360px] overflow-y-auto">
               {results.map((feature, i) => {
@@ -148,16 +148,16 @@ export function LakeSearch({ lakesData, onLakeSelect }: LakeSearchProps) {
                     onClick={() => {
                       if (props.lake_id) selectLake(props.lake_id);
                     }}
-                    className={`px-4 py-2.5 cursor-pointer ${isActive ? "bg-sky-50" : "hover:bg-slate-50"}`}
+                    className={`px-4 py-2.5 cursor-pointer ${isActive ? "bg-accent" : "hover:bg-muted"}`}
                   >
-                    <div className="font-semibold text-slate-800 text-sm">{props.name}</div>
-                    <div className="text-xs text-slate-500">{props.lake_id} · {area} m²</div>
+                    <div className="font-semibold text-foreground text-sm">{props.name}</div>
+                    <div className="text-xs text-muted-foreground">{props.lake_id} · {area} m²</div>
                   </li>
                 );
               })}
             </ul>
           ) : (
-            <div className="px-4 py-3 text-sm text-slate-500 italic">No lakes found</div>
+            <div className="px-4 py-3 text-sm text-muted-foreground italic">No lakes found</div>
           )}
         </div>
       )}

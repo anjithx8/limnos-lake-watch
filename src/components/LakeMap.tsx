@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
+import "maplibre-gl/dist/maplibre-gl.css";
 import type { Feature, FeatureCollection, Polygon, MultiPolygon, Position } from "geojson";
 
 interface LakeMapProps {
@@ -18,8 +19,8 @@ const BASEMAPS = {
   },
   light: {
     label: "Light",
-    tiles: ["https://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"],
-    attribution: "© OpenStreetMap contributors, Humanitarian OSM Team",
+    tiles: ["https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"],
+    attribution: "© OpenStreetMap contributors, © CartoDB",
   },
 } as const;
 
@@ -77,16 +78,28 @@ export function LakeMap({ lakesData, selectedLakeId, onLakeClick, mapRef, cityCe
     if (!containerRef.current || mapRef.current) return;
     let map: maplibregl.Map | null = null;
     const timer = setTimeout(() => {
-      if (!containerRef.current || mapRef.current) return;
-      map = new maplibregl.Map({
-        container: containerRef.current,
-        style: buildStyle("streets"),
-        center: [77.5946, 12.9716],
-        zoom: 11,
-      });
-      map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
-      map.once("load", () => setStyleReady((n) => n + 1));
-      mapRef.current = map;
+      if (!containerRef.current || mapRef.current) {
+        return;
+      }
+      try {
+        map = new maplibregl.Map({
+          container: containerRef.current!,
+          style: buildStyle("streets"),
+          center: [77.5946, 12.9716],
+          zoom: 11,
+        });
+        map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
+        map.once("load", () => {
+          setStyleReady((n) => n + 1);
+          setTimeout(() => {
+            if (mapRef.current) mapRef.current.resize();
+          }, 500);
+        });
+        map.on("error", (e) => console.error("Map error:", e));
+        mapRef.current = map;
+      } catch (err) {
+        console.error("❌ Failed to create map:", err);
+      }
     }, 100);
     return () => {
       clearTimeout(timer);
@@ -250,8 +263,19 @@ export function LakeMap({ lakesData, selectedLakeId, onLakeClick, mapRef, cityCe
   }, [selectedLakeId, lakesData, mapRef, styleReady]);
 
   return (
-    <>
-      <div ref={containerRef} className="absolute inset-0" />
+    <div style={{ width: "100%", height: "100%", position: "relative" }}>
+      <div 
+        ref={containerRef} 
+        style={{ 
+          position: "absolute", 
+          top: 0, 
+          left: 0, 
+          right: 0, 
+          bottom: 0,
+          width: "100%",
+          height: "100%"
+        }} 
+      />
       <div className="absolute top-4 right-4 z-30 flex flex-col items-end gap-1">
         <div className="rounded-full bg-white/90 backdrop-blur-sm shadow-md border border-slate-100 p-1 flex">
           {(Object.keys(BASEMAPS) as BasemapKey[]).map((k) => (
@@ -278,7 +302,7 @@ export function LakeMap({ lakesData, selectedLakeId, onLakeClick, mapRef, cityCe
           Map style
         </span>
       </div>
-    </>
+    </div>
   );
 }
 

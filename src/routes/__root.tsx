@@ -1,6 +1,7 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
+import { ThemeProvider } from "../components/theme-provider";
 
 function NotFoundComponent() {
   return (
@@ -44,11 +45,7 @@ export const Route = createRootRoute({
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap",
-      },
-      {
-        rel: "stylesheet",
-        href: "https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css",
+        href: "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&family=Inter:wght@400;500;600&family=Lato:ital,wght@0,400;1,400&family=Montserrat:wght@600;700&display=swap",
       },
     ],
   }),
@@ -72,5 +69,9 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
-  return <Outlet />;
+  return (
+    <ThemeProvider defaultTheme="system" storageKey="limnos-theme">
+      <Outlet />
+    </ThemeProvider>
+  );
 }
