@@ -10,13 +10,20 @@ import { HeaderCard } from "@/components/HeaderCard";
 import { LakeSearch } from "@/components/LakeSearch";
 import { AnalysisPanel } from "@/components/AnalysisPanel";
 import { AnalysisResults } from "@/components/AnalysisResults";
+import { CitySwitcher, type City } from "@/components/CitySwitcher";
+
+const CITY_CENTERS: Record<City, { center: [number, number]; zoom: number }> = {
+  bangalore: { center: [77.5946, 12.9716], zoom: 11 },
+  chintamani: { center: [78.0517, 13.4005], zoom: 13 },
+};
 
 export const Route = createFileRoute("/")({
   component: Index,
 });
 
 function Index() {
-  const { lakesData, loading, error, retry } = useLakes();
+  const [city, setCity] = useState<City>("bangalore");
+  const { lakesData, loading, error, retry } = useLakes(city);
   const { analysisResult, isAnalysing, error: analysisError, startAnalysis, reset } = useAnalysis();
 
   const [selectedLakeId, setSelectedLakeId] = useState<string | null>(null);
@@ -46,6 +53,16 @@ function Index() {
     reset();
   }, [reset]);
 
+  const handleCityChange = useCallback(
+    (next: City) => {
+      if (next === city) return;
+      setSelectedLakeId(null);
+      reset();
+      setCity(next);
+    },
+    [city, reset],
+  );
+
   const handleRetry = useCallback(() => {
     if (!analysisResult && !analysisError) return;
     reset();
@@ -73,6 +90,7 @@ function Index() {
                   selectedLakeId={selectedLakeId}
                   onLakeClick={handleLakeSelect}
                   mapRef={mapRef}
+                  cityCenter={CITY_CENTERS[city]}
                 />
               </Suspense>
             )}
@@ -94,7 +112,8 @@ function Index() {
       </div>
 
       {!panelOpen && <HeaderCard lakeCount={lakesData?.features.length ?? 0} />}
-      <LakeSearch lakesData={lakesData} onLakeSelect={handleLakeSelect} />
+      <CitySwitcher city={city} onChange={handleCityChange} />
+      <LakeSearch key={city} lakesData={lakesData} onLakeSelect={handleLakeSelect} />
 
       <AnalysisPanel
         lake={selectedLake}

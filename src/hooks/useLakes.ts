@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { FeatureCollection } from "geojson";
 import { fetchLakes } from "@/services/api";
 
-export function useLakes() {
+export function useLakes(city?: string) {
   const [lakesData, setLakesData] = useState<FeatureCollection | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -12,7 +12,7 @@ export function useLakes() {
     let cancelled = false;
     setLoading(true);
     setError(null);
-    fetchLakes()
+    fetchLakes(city)
       .then((data) => {
         if (!cancelled) setLakesData(data);
       })
@@ -25,7 +25,7 @@ export function useLakes() {
     return () => {
       cancelled = true;
     };
-  }, [reloadKey]);
+  }, [reloadKey, city]);
 
   return { lakesData, loading, error, retry: () => setReloadKey((k) => k + 1) };
 }
