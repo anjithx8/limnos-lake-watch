@@ -7,6 +7,7 @@ interface LakeMapProps {
   selectedLakeId: string | null;
   onLakeClick: (lakeId: string) => void;
   mapRef: React.MutableRefObject<maplibregl.Map | null>;
+  cityCenter?: { center: [number, number]; zoom: number };
 }
 
 const BASEMAPS = {
@@ -63,7 +64,7 @@ function getBounds(geometry: Polygon | MultiPolygon): [[number, number], [number
   ];
 }
 
-export function LakeMap({ lakesData, selectedLakeId, onLakeClick, mapRef }: LakeMapProps) {
+export function LakeMap({ lakesData, selectedLakeId, onLakeClick, mapRef, cityCenter }: LakeMapProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const popupRef = useRef<maplibregl.Popup | null>(null);
   const [basemap, setBasemap] = useState<BasemapKey>("streets");
