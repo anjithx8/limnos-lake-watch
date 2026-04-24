@@ -53,6 +53,16 @@ function Index() {
     reset();
   }, [reset]);
 
+  const handleCityChange = useCallback(
+    (next: City) => {
+      if (next === city) return;
+      setSelectedLakeId(null);
+      reset();
+      setCity(next);
+    },
+    [city, reset],
+  );
+
   const handleRetry = useCallback(() => {
     if (!analysisResult && !analysisError) return;
     reset();
@@ -80,6 +90,7 @@ function Index() {
                   selectedLakeId={selectedLakeId}
                   onLakeClick={handleLakeSelect}
                   mapRef={mapRef}
+                  cityCenter={CITY_CENTERS[city]}
                 />
               </Suspense>
             )}
